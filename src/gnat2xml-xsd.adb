@@ -147,25 +147,25 @@ package body Gnat2xml.Xsd is
         (Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "line"),
-             Attr ("type", "xsd:decimal"),
+             Attr ("type", "xsd:int"),
              Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "col"),
-             Attr ("type", "xsd:decimal"),
+             Attr ("type", "xsd:int"),
              Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "endline"),
-             Attr ("type", "xsd:decimal"),
+             Attr ("type", "xsd:int"),
              Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "endcol"),
-             Attr ("type", "xsd:decimal"),
+             Attr ("type", "xsd:int"),
              Attr ("use", "required")),
             Empty));
 
