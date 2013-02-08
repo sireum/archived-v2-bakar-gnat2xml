@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<codeRepresentation>
+   <sourceLanguage name="Ada" languageVersion="95" compiler="GNAT GPL 2006 (20060522-34)"/>
+   <pedigrees>
+      <pedigree name="axfPoint" xmlStyle="true">
+         <processorInfo name="Avatox" implementor="McKae Technologies (www.mckae.com)" implementorVersion="1.6"/>
+      </pedigree>
+      <pedigree name="asis" xmlStyle="true">
+         <standardInfo name="Ada Semantic Interface Specification (ASIS)" implementor="AdaCore (http://www.adacore.com)" implementorVersion="ASIS 2.0.R for GNAT GPL 2006 (20060522-34)"/>
+      </pedigree>
+      <pedigree name="avatoxAsis" xmlStyle="true">
+         <processorInfo name="Avatox" implementor="McKae Technologies (www.mckae.com)" implementorVersion="1.6"/>
+      </pedigree>
+   </pedigrees>
+   <aPackage pedigree="asis" unitName="Vatox" startLine="24" startCol="1" endLine="26" endCol="10">
+      <aComment pedigree="avatoxAsis" startLine="1" startCol="1" endLine="1" endCol="78">
+      ------------------------------------------------------------------------------
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="2" startCol="1" endLine="2" endCol="78">
+      --                                                                          --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="3" startCol="1" endLine="3" endCol="78">
+      --                           AVATOX COMPONENTS                              --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="4" startCol="1" endLine="4" endCol="78">
+      --                                                                          --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="5" startCol="1" endLine="5" endCol="78">
+      --                        VATOX (Via Asis To Xml)                           --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="6" startCol="1" endLine="6" endCol="78">
+      --                                                                          --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="7" startCol="1" endLine="7" endCol="78">
+      --                                                                          --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="8" startCol="1" endLine="8" endCol="78">
+      --                Copyright (c) 2006, McKae Technologies.                   --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="9" startCol="1" endLine="9" endCol="78">
+      --                                                                          --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="10" startCol="1" endLine="10" endCol="78">
+      -- Avatox is free software; you can redistribute it and/or modify it        --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="11" startCol="1" endLine="11" endCol="78">
+      -- under terms of the  GNU General Public License  as published by the Free --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="12" startCol="1" endLine="12" endCol="78">
+      -- Software Foundation;  either version 2,  or  (at your option)  any later --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="13" startCol="1" endLine="13" endCol="78">
+      -- version. Avatox is distributed in the hope  that it will be useful,      --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="14" startCol="1" endLine="14" endCol="78">
+      -- but WITHOUT ANY WARRANTY; without even the implied warranty of MER-      --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="15" startCol="1" endLine="15" endCol="78">
+      -- CHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General  --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="16" startCol="1" endLine="16" endCol="78">
+      -- Public License for more details. You should have received a copy of the  --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="17" startCol="1" endLine="17" endCol="78">
+      -- GNU General Public License distributed with GNAT; see file COPYING. If   --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="18" startCol="1" endLine="18" endCol="78">
+      -- not, write to the Free Software Foundation, 59 Temple Place Suite 330,   --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="19" startCol="1" endLine="19" endCol="78">
+      -- Boston, MA 02111-1307, USA.                                              --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="20" startCol="1" endLine="20" endCol="78">
+      --                                                                          --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="21" startCol="1" endLine="21" endCol="127">
+      -- Avatox is now maintained by McKae Technologies (http://www.mckae.com)    --                                               --
+      </aComment>
+      <aComment pedigree="avatoxAsis" startLine="22" startCol="1" endLine="22" endCol="78">
+      ------------------------------------------------------------------------------
+      </aComment>
+      <aDeclaration pedigree="asis" startLine="24" startCol="1" endLine="26" endCol="10">
+         <aPackageDeclaration pedigree="asis" startLine="24" startCol="1" endLine="26" endCol="10">
+            <axfPoint pedigree="axfPoints" axfScope="Vatox">
+               <axfPoint pedigree="axfPoints" axfScopeName="Vatox" axfScopeLevel="0"/>
+            </axfPoint>
+         </aPackageDeclaration>
+         <aDefiningName pedigree="asis" startLine="24" startCol="9" endLine="24" endCol="13">
+            <aDefiningIdentifier pedigree="asis" name="Vatox" startLine="24" startCol="9" endLine="24" endCol="13"/>
+         </aDefiningName>
+      </aDeclaration>
+   </aPackage>
+</codeRepresentation>

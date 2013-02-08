@@ -1,0 +1,23 @@
+with "asis", "xmlada";
+
+project Boot is
+
+   --  Project file used by Makefile to build the stage 2 version
+
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Exec_Dir use ".";
+   for Main use ("gnat2xml-gnat2xsd.adb", "gnat2xml-gnat2xml.adb", "gnat2xml-xml2gnat.adb",
+                 "gnat2xml-strip_comments.adb");
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnat2012");
+   end Compiler;
+
+   package Builder is
+      for Executable ("gnat2xml-gnat2xsd.adb") use "gnat2xsd";
+      for Executable ("gnat2xml-gnat2xml.adb") use "gnat2xml";
+      for Executable ("gnat2xml-xml2gnat.adb") use "xml2gnat";
+   end Builder;
+
+end Boot;

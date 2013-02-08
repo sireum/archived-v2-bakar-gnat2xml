@@ -1,0 +1,25 @@
+with "asis";
+
+project Avatox is
+
+   for Source_Dirs use (".", "mckae", "strings_edit_subset", "with_xslt");
+   for Object_Dir use ".";
+   for Main use ("avatox.adb");
+
+   package Linker is
+      for Default_Switches ("ada") use ("-lxslt");
+   end Linker;
+
+   package Builder is
+      for Executable ("avatox.adb") use "";
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-O2", "-gnatQ", "-gnat05");
+   end Compiler;
+
+   package Binder is
+   end Binder;
+
+end Avatox;
+

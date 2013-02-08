@@ -1,0 +1,18 @@
+with "asis", "xmlada";
+
+project Xml2gnat is
+
+   for Source_Dirs use (".", "mckae", "strings_edit_subset", "no_xslt");
+   for Object_Dir use "obj";
+   for Exec_Dir use ".";
+   for Main use ("gnat2xml-xml2gnat.adb");
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnat2012");
+   end Compiler;
+
+   package Builder is
+      for Executable ("gnat2xml-xml2gnat.adb") use "xml2gnat";
+   end Builder;
+
+end Xml2gnat;

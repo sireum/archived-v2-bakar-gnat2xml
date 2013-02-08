@@ -1,0 +1,30 @@
+with "asis", "xmlada";
+
+project Gnat2xml is
+
+   --  This was derived from avatox_noxsl.gpr. We have no need for xsl here.
+
+   for Source_Dirs use (".", "mckae", "strings_edit_subset", "no_xslt");
+   for Object_Dir use "obj";
+   for Exec_Dir use ".";
+   for Main use ("gnat2xml-gnat2xsd.adb", "gnat2xml-gnat2xml.adb",
+                 "gnat2xml-strip_comments.adb",
+                 "gnat2xml-ada_trees-generate_factory.adb");
+
+--   package Binder is
+--   end Binder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnat2012");
+   end Compiler;
+
+   package Builder is
+--      for Executable ("avatox.adb") use "";
+      for Executable ("gnat2xml-gnat2xsd.adb") use "gnat2xsd";
+      for Executable ("gnat2xml-gnat2xml.adb") use "gnat2xml";
+   end Builder;
+
+--   package Linker is
+--   end Linker;
+
+end Gnat2xml;

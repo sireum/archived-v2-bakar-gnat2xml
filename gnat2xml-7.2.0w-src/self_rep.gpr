@@ -1,0 +1,17 @@
+with "asis", "xmlada";
+
+project Self_Rep is
+
+   --  Project file used by the do-self-rep.sh script to build the
+   --  Self_Replicate programs (all of which have the same name).
+
+   for Source_Dirs use ("stage/2/self_rep", ".");
+   for Object_Dir use "obj";
+   for Exec_Dir use ".";
+   for Main use ("self_replicate.adb", "regenerate_ada.adb");
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnat2012");
+   end Compiler;
+
+end Self_Rep;
