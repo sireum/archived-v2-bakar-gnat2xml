@@ -238,7 +238,7 @@ package body Gnat2xml.Xsd is
                Choices (Last) :=
                  Xml_Elem
                    ("xsd:element",
-                    +Attr ("name", Element_Name (K)),
+                    +Attr ("ref", Element_Name (K)),
                     Empty);
             end if;
          end loop;
@@ -280,7 +280,7 @@ package body Gnat2xml.Xsd is
                Choices (Last) :=
                  Xml_Elem
                    ("xsd:element",
-                    +Attr ("name", Element_Name (K)),
+                    +Attr ("ref", Element_Name (K)),
                     Empty);
             end if;
          end loop;
