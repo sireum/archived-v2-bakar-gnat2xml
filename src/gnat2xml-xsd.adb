@@ -643,10 +643,16 @@ package body Gnat2xml.Xsd is
 
       Gnat2xml_Versioning.Print_Version_Info
         (Tool_Name => "gnat2xsd", First_Release_Year => "2012");
-
+      P ("         Copyright (C) 2013, Kansas State University\n");
       P ("\n");
+
       P ("This schema is open source and is licensed under the Eclipse Public\n");
       P ("License (EPL). See http://www.eclipse.org/legal/epl-v10.html\n");
+      P ("\n");
+
+      P ("This material is based upon work supported by the U.S. Air Force\n");
+      P ("Office of Scientific Research, Funded Through Kansas State University,\n");
+      P ("Under Award No. FA9550-09-0138.\n");
 
       P ("\n");
       P ("\n");
