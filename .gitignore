@@ -1,0 +1,11 @@
+config
+src/ada-schema.compact.xsd.new
+src/ada-schema.xsd.new
+src/gnat2xml
+src/gnat2xml-ada_trees-factory.adb
+src/gnat2xml-ada_trees-factory.ads
+src/gnat2xml-ada_trees-generate_factory
+src/gnat2xml-strip_comments
+src/gnat2xsd
+src/obj/
+src/xml2gnat
