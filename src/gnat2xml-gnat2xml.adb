@@ -640,9 +640,11 @@ end if;
    -- Open the ASIS context and start processing files
    Asis.Ada_Environments.Open (The_Avatox_Context);
 
+   -- belt: added gnatd.V option to allow processing of Loop_Invariants
    A4G.Contt.Set_Extra_Options
      (Asis.Set_Get.Get_Cont_Id (The_Avatox_Context),
-      (1 => new String'("-gnat2012")));
+      (1 => new String'("-gnat2012"),
+       2 => new String'("-gnatd.V")));
 
    Continue := True;
    Unit_Cursor := Primary_Files.First;
