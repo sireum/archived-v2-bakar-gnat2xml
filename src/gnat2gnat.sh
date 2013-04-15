@@ -40,11 +40,11 @@ else
   lib_include=
 fi
 
-gnat2xml -I.. $lib_include -mxml $*
+gnat2xml -I.. $lib_include -mxml $* -cargs -gnat2012
 
 xml2gnat $*
 mv generated_ada/$* ..
 cd ..
-#rm -rf $tempdir
+rm -rf $tempdir
 
 echo Done: gnat2gnat.sh $*

@@ -1,6 +1,7 @@
-with "asis", "xmlada";
+with "xmlada";
+with "../../asis";
 
-project Self_Rep is
+project Self_Rep extends "../tool_utils/tool_utils" is
 
    --  Project file used by the do-self-rep.sh script to build the
    --  Self_Replicate programs (all of which have the same name).
@@ -11,7 +12,7 @@ project Self_Rep is
    for Main use ("self_replicate.adb", "regenerate_ada.adb");
 
    package Compiler is
-      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnat2012");
+      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato");
    end Compiler;
 
 end Self_Rep;

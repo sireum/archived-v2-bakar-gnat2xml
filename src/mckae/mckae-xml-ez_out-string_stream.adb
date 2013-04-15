@@ -28,76 +28,79 @@
 -- (http://www.mckae.com).                                            --
 ------------------------------------------------------------------------
 
-with Mckae.XML.EZ_Out.Generic_Medium;
+with McKae.XML.EZ_Out.Generic_Medium;
 with Ada.Strings.Fixed;
-with Ada.Text_IO;
-use  Ada.Text_IO;
+with Ada.Text_IO; use Ada.Text_IO;
 with Unchecked_Deallocation;
 
-package body Mckae.XML.EZ_Out.String_Stream is
+package body McKae.XML.EZ_Out.String_Stream is
 
    package body String_Buffering is
-      procedure Free is new Unchecked_Deallocation(String, Buffer_Ptr);
 
-      -- A basic in-memory string buffering package for building XML
+      procedure Free is new Unchecked_Deallocation (String, Buffer_Ptr);
+
+      --  A basic in-memory string buffering package for building XML
       --  documents with EZ_Out.  This is not intended to be a robust,
       --  full-function memory buffering package.
 
-      procedure Extend (F      : in String_Buffer;
-                        To_Add : in Positive)is
+      procedure Extend (F : String_Buffer; To_Add : Positive) is
 
-         Temp_Buff        : Buffer_Ptr := F.Buff;
+         Temp_Buff : Buffer_Ptr := F.Buff;
 
          Size_Delta       : Positive;
          Expansion_Factor : Positive;
-         New_Size         : Positive := F.Size + To_Add;
+         New_Size : Positive := F.Size + To_Add;
 
       begin
          if New_Size > F.Allocation then
-            Size_Delta        := New_Size - F.Allocation;
-            Expansion_Factor  := (Size_Delta / F.Expansion) + 1;
-            F.Self.Sb.Allocation
-              := F.Allocation + (Expansion_Factor * F.Expansion);
+            Size_Delta           := New_Size - F.Allocation;
+            Expansion_Factor     := (Size_Delta / F.Expansion) + 1;
+            F.Self.SB.Allocation :=
+              F.Allocation + (Expansion_Factor * F.Expansion);
 
-            F.Self.Sb.Buff := new String(1 .. F.Allocation);
-            F.Self.Sb.Buff(1 .. F.Size) := Temp_Buff(1 .. F.Size);
+            F.Self.SB.Buff               := new String (1 .. F.Allocation);
+            F.Self.SB.Buff (1 .. F.Size) := Temp_Buff (1 .. F.Size);
             Free (Temp_Buff);
          end if;
       end Extend;
 
-      -- Copy the given string into the buffer, expanding it if needed.
-      procedure Put(F : in String_Buffer;
-                    S : in String) is
+      --  Copy the given string into the buffer, expanding it if needed.
+
+      procedure Put (F : String_Buffer; S : String) is
       begin
          if S'Length > 0 then
-            Extend(F, S'Length);
-            F.Buff(F.Size + 1 .. F.Size + S'Length) := S;
-            F.Self.Sb.Size := F.Size + S'Length;
+            Extend (F, S'Length);
+            F.Buff (F.Size + 1 .. F.Size + S'Length) := S;
+            F.Self.SB.Size                           := F.Size + S'Length;
          end if;
       end Put;
 
-      -- Insert a new line indicator into the buffer.
-      procedure New_Line (F       : in String_Buffer;
-                          Spacing : in Ada.Text_IO.Positive_Count := 1) is
+      --  Insert a new line indicator into the buffer.
+
+      procedure New_Line
+        (F : String_Buffer;
+         Spacing : Ada.Text_IO.Positive_Count := 1)
+      is
          use Ada.Strings.Fixed;
+
       begin
          null;
       end New_Line;
 
-      -- Clear the buffer
-      procedure Clear(S : String_Buffer) is
+      --  Clear the buffer
+
+      procedure Clear (S : String_Buffer) is
       begin
-         S.Self.Sb.Size := 0;
+         S.Self.SB.Size := 0;
       end Clear;
 
-      -- Return the current contents of the string buffer
-      function Get_String(S : String_Buffer) return String is
+      --  Return the current contents of the string buffer
+
+      function Get_String (S : String_Buffer) return String is
       begin
-         return S.Buff(1 .. S.Size);
+         return S.Buff (1 .. S.Size);
       end Get_String;
+
    end String_Buffering;
 
-end Mckae.XML.EZ_Out.String_Stream;
-
-
-
+end McKae.XML.EZ_Out.String_Stream;

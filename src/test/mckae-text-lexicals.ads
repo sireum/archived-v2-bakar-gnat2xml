@@ -70,4 +70,3 @@ package McKae.Text.Lexicals is
                       ) return String;
 
 end Mckae.Text.Lexicals;
-
