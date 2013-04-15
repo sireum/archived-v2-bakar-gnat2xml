@@ -6,7 +6,7 @@
 --                                                                          --
 --                                 S p e c                                  --
 --                                                                          --
---                    Copyright (C) 2012, AdaCore, Inc.                     --
+--                  Copyright (C) 2012-2013, AdaCore, Inc.                  --
 --                                                                          --
 -- Gnat2xml is free software; you can redistribute it and/or modify it      --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -21,68 +21,62 @@
 -- The gnat2xml tool was derived from the Avatox sources.                   --
 ------------------------------------------------------------------------------
 
---  Root package for the Gnat2xml tools. There are two main procedures: the
---  schema (XSD) generator Gnat2xml.Gnat2xsd and the XML generator
---  Gnat2xml.Gnat2xml. The corresponding executables are gnat2xsd[.exe] and
---  gnat2xml[.exe].
+pragma Ada_2012;
 
-with A4G.Queries; use A4G;
+--  Root package for the Gnat2xml tools. There are two main executables the
+--  schema (XSD) generator (gnat2xsd[.exe]) and the XML generator
+--  (gnat2xml[.exe]). The main procedure for the former is Gnat2xml.Gnat2xsd.
+--  The latter uses ASIS_UL, so the main procedure is
+--  ASIS_UL.Several_Files_Driver.
+
+with ASIS_UL.Debug;
+with ASIS_UL.Utilities;
+
+with A4G.Queries;
+use A4G;
 
 with Asis.Text;
-with Asis.Extensions.Flat_Kinds; use Asis.Extensions.Flat_Kinds;
 
-with Strings; use Strings;
+pragma Warnings (Off); -- imported for children
+with ASIS_UL.String_Utilities; use ASIS_UL.String_Utilities;
+with ASIS_UL.Dbg_Out;
+with Asis.Extensions.Flat_Kinds; use Asis.Extensions.Flat_Kinds;
+pragma Warnings (On);
+with Ada_Trees;
 
 package Gnat2xml is
 
-   subtype Classes is Flat_Element_Kinds'Base
-     range Not_An_Element .. A_Statement_Class;
-   --  All classes, including the abstract ones, the lists, and the singleton
-   --  element kinds
+   use ASIS_UL;
 
-   subtype Opt_ASIS_Elems is Flat_Element_Kinds'Base
-     range Not_An_Element .. A_Compilation_Unit;
+   subtype Classes is Ada_Trees.Classes;
+   subtype Opt_ASIS_Elems is Ada_Trees.Opt_ASIS_Elems;
 
-   function Ekind (Element : Asis.Element) return Opt_ASIS_Elems;
+   function Ekind (Element : Asis.Element) return Opt_ASIS_Elems
+     renames Ada_Trees.Ekind;
 
-   function Num_Queries (Kind : Opt_ASIS_Elems) return A4G.Queries.Query_Count;
    use type A4G.Queries.Query_Index;
-   function Is_Leaf (E : Asis.Element) return Boolean is
-      (Num_Queries (Ekind (E)) = 0);
 
-   function Span (Element : Asis.Element) return Asis.Text.Span;
-   --  Return Nil_Element for gnat2xml-specific kinds
+   function Span (Element : Asis.Element) return Asis.Text.Span
+     renames Ada_Trees.Span;
 
-   subtype ASIS_Elems is Opt_ASIS_Elems with
-     Predicate => ASIS_Elems /= Not_An_Element;
-
-   subtype Def_Names is Flat_Defining_Name_Kinds;
-   --  Defining occurences, such as A_Defining_Identifier
-
-   subtype Usage_Names is Flat_Usage_Name_Kinds;
-   --  References to defining occurrences, such as An_Identifier
-
-   subtype Name_Elems is ASIS_Elems with
-     Predicate => Name_Elems in Def_Names | Usage_Names;
-
-   subtype Boolean_Elems is ASIS_Elems'Base range An_Aliased .. An_Is_Prefix_Notation;
-
-   subtype Other_Elems is ASIS_Elems with
-     Predicate => Other_Elems not in Name_Elems | Boolean_Elems;
-
-   Main_Done : Boolean := False;
-   --  This is set True at the end of each main procedure. The purpose is so
-   --  assertions in Finalize operations can tell whether the main procedure
-   --  exited normally. See, for example, Generic_Formatted_Output.Finalize,
-   --  which insists that when we reach the end of the main procedure, the
-   --  indentation level should be zero. But if an exception propagates out of
-   --  the main procedure, that's just a bug which should be reported normally.
+   subtype ASIS_Elems is Ada_Trees.ASIS_Elems;
+   subtype Def_Names is Ada_Trees.Def_Names;
+   subtype Usage_Names is Ada_Trees.Usage_Names;
+   subtype Name_Elems is Ada_Trees.Name_Elems;
+   subtype Boolean_Elems is Ada_Trees.Boolean_Elems;
+   subtype Other_Elems is Ada_Trees.Other_Elems;
 
    subtype Unit_Kinds is Asis.Unit_Kinds;
    subtype Unit_Classes is Asis.Unit_Classes;
    subtype Unit_Origins is Asis.Unit_Origins;
    use all type Unit_Kinds, Unit_Classes, Unit_Origins;
 
-   Debug_Mode : Boolean := False;
+   function Is_Leaf
+     (E : Asis.Element) return Boolean is
+     (Queries.Num_Queries (Ekind (E)) = 0);
+
+   Main_Done : Boolean renames ASIS_UL.Utilities.Main_Done;
+
+   Debug_Mode : Boolean renames ASIS_UL.Debug.Debug_Flag_9;
 
 end Gnat2xml;

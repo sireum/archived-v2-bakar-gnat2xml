@@ -7,7 +7,7 @@
 --                                                                          --
 --                                                                          --
 --                Copyright (C) 2006, McKae Technologies.                   --
---                Copyright (C) 2012, AdaCore, Inc.                         --
+--                Copyright (C) 2012-2013, AdaCore, Inc.                    --
 --                                                                          --
 -- Avatox is free software; you can redistribute it and/or modify it        --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -24,13 +24,14 @@
 --                                                                          --
 -- The gnat2xml tool was derived from the Avatox sources.                   --
 ------------------------------------------------------------------------------
-with Mckae.XML.EZ_Out.Generic_Medium;
-with Ada.Text_IO;
-use  Ada.Text_IO;
 
-pragma Elaborate_All (Mckae.Xml.Ez_Out.Generic_Medium);
+pragma Ada_2012;
 
-package Gnat2xml.Xml_File_Output is
-   new Mckae.XML.EZ_Out.Generic_Medium
-  (Output_Medium       => Ada.Text_IO.File_Type,
+with McKae.XML.EZ_Out.Generic_Medium;
+with Ada.Text_IO; use Ada.Text_IO;
+
+pragma Elaborate_All (McKae.XML.EZ_Out.Generic_Medium);
+
+package Gnat2xml.Xml_File_Output is new McKae.XML.EZ_Out.Generic_Medium
+  (Output_Medium => Ada.Text_IO.File_Type,
    Max_Element_Nesting => 20_000);

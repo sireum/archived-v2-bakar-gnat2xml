@@ -30,44 +30,42 @@
 
 package McKae.Text.Lexicals is
 
-   -- Utilities for manipulating software lexical elements, such as identifiers.
+   --  Utilities for manipulating software lexical elements, such as
+   --  identifiers.
 
-   -- Capitalization choices
-   type Capitalizations is
-     (nO_cHaNGe,
-      UPPER,
-      lower,
-      Capitalized,
-      camelBack);
+   --  Capitalization choices
 
-   -- Some convenience definitions
+   type Capitalizations is (nO_cHaNGe, UPPER, lower, Capitalized, camelBack);
+
+   --  Some convenience definitions
    Ada_Ident    : constant Capitalizations := Capitalized;
-   Ada_Reserved : constant Capitalizations := Lower;
-   Ada83_Ident  : constant Capitalizations := Upper;
+   Ada_Reserved : constant Capitalizations := lower;
+   Ada83_Ident  : constant Capitalizations := UPPER;
 
-   CPP_Ident    : constant Capitalizations := Camelback;
-   Cpp_Reserved : constant Capitalizations := Lower;
+   CPP_Ident    : constant Capitalizations := camelBack;
+   Cpp_Reserved : constant Capitalizations := lower;
 
-   XML_Common   : constant Capitalizations := Camelback;
-   XML_Elements : constant Capitalizations := Camelback;
-   XML_Attrs    : constant Capitalizations := Camelback;
+   XML_Common   : constant Capitalizations := camelBack;
+   XML_Elements : constant Capitalizations := camelBack;
+   XML_Attrs    : constant Capitalizations := camelBack;
 
-   -- Transform a string in accordance with the specified capitalization,
-   -- and also optionally remove underscores from the element.  The application
-   -- must handle any issues with different strings ending up looking the same.
-   -- Note for Capitalized and Camelback:  This function cannot in and of
-   -- itself find the words in the element to capitalize, they must be
-   -- delimited by the start of the element, underscores, and the end of the
-   -- element.
-   function Transform (S                  : String;
-                       -- The string to transform
+   --  Transform a string in accordance with the specified capitalization, and
+   --  also optionally remove underscores from the element.  The application
+   --  must handle any issues with different strings ending up looking the
+   --  same.  Note for Capitalized and Camelback: This function cannot in and
+   --  of itself find the words in the element to capitalize, they must be
+   --  delimited by the start of the element, underscores, and the end of the
+   --  element.
+   function Transform
+     (S : String;
+   --  The string to transform
 
-                       Capitalization     : Capitalizations;
-                       -- Which capitalization approach to use
+      Capitalization : Capitalizations;
+   --  Which capitalization approach to use
 
-                       Remove_Underscores : Boolean := False
-                       -- Whether to remove underscores from the element
-                      ) return String;
+      Remove_Underscores : Boolean := False
+   --  Whether to remove underscores from the element
+   )
+     return String;
 
-end Mckae.Text.Lexicals;
-
+end McKae.Text.Lexicals;

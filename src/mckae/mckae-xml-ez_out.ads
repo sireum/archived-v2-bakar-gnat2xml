@@ -30,31 +30,31 @@
 
 package McKae.XML.EZ_Out is
 
-   -- This package is the parent package for a collection of packages
+   --  This package is the parent package for a collection of packages
    --  that provide a simple means of XML output generation to a
    --  variety of output media.
 
    type Formatting_Options is
-     (Continuous_Stream,     -- No indenting, line breaks, or other
-                             -- extraneous whitespace.
-      Spread_Indented        -- Start and end tags are indented, and
-                             -- each resides on its own line.
-      );
+     (Continuous_Stream, -- No indenting, line breaks, or other
+   --  extraneous whitespace.
+   Spread_Indented -- Start and end tags are indented, and
+   --  each resides on its own line.
+   );
 
    Element_Not_Open : exception;
-   -- An attempt was made to end, or add content to, an element when
+   --  An attempt was made to end, or add content to, an element when
    --  there were no open elements awaiting text or completion.
 
    Element_End_Mismatch : exception;
-   -- The specified end tag does not match that of the currently open
+   --  The specified end tag does not match that of the currently open
    --  element.
 
    Nesting_Too_Deep : exception;
-   -- The number of open, nested elements has exceeded the maximum
+   --  The number of open, nested elements has exceeded the maximum
    --  level that was specified.
 
    Invalid_Construction : exception;
-   -- An attempt was made to create a malformed document, such as
+   --  An attempt was made to create a malformed document, such as
    --  inserting a process instruction into an open element.
 
 end McKae.XML.EZ_Out;

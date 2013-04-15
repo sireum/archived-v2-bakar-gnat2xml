@@ -1,30 +1,28 @@
-with "asis", "xmlada";
+with "xmlada";
+with "../../asis";
 
-project Gnat2xml is
+project Gnat2xml extends "../tool_utils/tool_utils" is
 
    --  This was derived from avatox_noxsl.gpr. We have no need for xsl here.
 
-   for Source_Dirs use (".", "mckae", "strings_edit_subset", "no_xslt");
+   for Source_Dirs use (".", "mckae");
    for Object_Dir use "obj";
    for Exec_Dir use ".";
-   for Main use ("gnat2xml-gnat2xsd.adb", "gnat2xml-gnat2xml.adb",
+   for Main use ("gnat2xml-gnat2xsd.adb",
+                 "asis_ul-several_files_driver.adb",
                  "gnat2xml-strip_comments.adb",
-                 "gnat2xml-ada_trees-generate_factory.adb");
-
---   package Binder is
---   end Binder;
+                 "ada_trees-generate_factory.adb",
+                 "gnat2xml-gnat2tokens.adb",
+                 "ada_trees-buffers-test.adb");
 
    package Compiler is
-      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnat2012");
+      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnatyg", "-gnatwa");
+--      for Default_Switches ("ada") use ("-O2", "-gnatp", "-g");
    end Compiler;
 
    package Builder is
---      for Executable ("avatox.adb") use "";
       for Executable ("gnat2xml-gnat2xsd.adb") use "gnat2xsd";
-      for Executable ("gnat2xml-gnat2xml.adb") use "gnat2xml";
+      for Executable ("asis_ul-several_files_driver.adb") use "gnat2xml";
    end Builder;
-
---   package Linker is
---   end Linker;
 
 end Gnat2xml;

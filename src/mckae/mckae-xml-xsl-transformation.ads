@@ -28,57 +28,60 @@
 -- (http://www.mckae.com).                                            --
 ------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded;
-use  Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
 package McKae.XML.XSL.Transformation is
 
-   -- Failure in transformation
+   --  Failure in transformation
+
    type Application_Statuses is
-     (Success,                  -- The XSL transformation was successfully performed
-      Bad_Input_File,		-- The input file could not be opened/read
-      Input_Not_Xml,		-- The input file does not contain valid XML
-      Bad_Output_File, 		-- The output file could not be created/written
-      Save_Failed,		-- Saving the transformed file failed
-      Bad_Xsl_File,		-- The XSL file count not be opened/read
-      Xsl_Not_Xsl,		-- The XSL file does not contain valid XSL
-      Transformation_Failed	-- The application of the XSL stylesheet failed
+     (Success, -- The XSL transformation was successfully performed
+     Bad_Input_File, -- The input file could not be opened/read
+     Input_Not_Xml, -- The input file does not contain valid XML
+     Bad_Output_File, -- The output file could not be created/written
+     Save_Failed, -- Saving the transformed file failed
+     Bad_Xsl_File, -- The XSL file count not be opened/read
+     Xsl_Not_Xsl, -- The XSL file does not contain valid XSL
+     Transformation_Failed -- The application of the XSL stylesheet failed
      );
 
-   -- Association of keys and values to provide to an XSL stylesheet's parameter
-   -- elements.
+   --  Association of keys and values to provide to an XSL stylesheet's parameter
+   --  elements.
+
    type Key_Value_Pairs is record
       Key   : Unbounded_String;
       Value : Unbounded_String;
    end record;
 
-   -- Index range for parameters
+   --  Index range for parameters
+
    type Parameter_Indices is new Natural;
 
-   -- List of parameter settings to be provided
-   type Parameter_Settings is array (Parameter_Indices range <>)
-   of Key_Value_Pairs;
+   --  List of parameter settings to be provided
 
-   No_Parameters : constant Parameter_Settings (1 .. 0)
-     := (others => (Null_Unbounded_String, Null_Unbounded_String));
+   type Parameter_Settings is
+     array (Parameter_Indices range <>) of Key_Value_Pairs;
 
-   -- Apply the XSL stylesheet to the given file, writing the transformed XML
-   -- into the provided file.
+   No_Parameters : constant Parameter_Settings (1 .. 0) :=
+     (others => (Null_Unbounded_String, Null_Unbounded_String));
+
+   --  Apply the XSL stylesheet to the given file, writing the transformed XML
+   --  into the provided file.
    procedure Apply_Xsl
-     (Input_Filename  : in String;
-      -- Filename containing the XML to be transformed
+     (Input_Filename : String;
+   --  Filename containing the XML to be transformed
 
-      Xsl_Filename    : in String;
-      -- The file containing the XSL to apply to the input file
+      Xsl_Filename : String;
+   --  The file containing the XSL to apply to the input file
 
-      Target_Filename : in String;
-      -- The file into which to write the result of the transformation
+      Target_Filename : String;
+   --  The file into which to write the result of the transformation
 
-      Status          :    out Application_Statuses;
-      -- Status of the tranformation application
+      Status : out Application_Statuses;
+   --  Status of the tranformation application
 
-      Parameters      : in     Parameter_Settings := No_Parameters
-      -- Parameters to be provided to the stylesheet
-     );
+      Parameters : Parameter_Settings := No_Parameters
+   --  Parameters to be provided to the stylesheet
+   );
 
 end McKae.XML.XSL.Transformation;

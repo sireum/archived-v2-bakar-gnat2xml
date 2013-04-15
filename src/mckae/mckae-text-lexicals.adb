@@ -28,10 +28,8 @@
 -- (http://www.mckae.com).                                            --
 ------------------------------------------------------------------------
 
-with Ada.Strings.Fixed;
-use  Ada.Strings.Fixed;
-with Ada.Strings.Maps.Constants;
-use  Ada.Strings.Maps.Constants;
+with Ada.Strings.Fixed;          use Ada.Strings.Fixed;
+with Ada.Strings.Maps.Constants; use Ada.Strings.Maps.Constants;
 
 package body McKae.Text.Lexicals is
 
@@ -40,30 +38,34 @@ package body McKae.Text.Lexicals is
    ---------------
 
    function Transform
-     (S                  : String;
-      Capitalization     : Capitalizations;
+     (S              : String;
+      Capitalization : Capitalizations;
       Remove_Underscores : Boolean := False)
-      return String
+     return String
    is
       use Ada.Strings.Maps;
 
       T : String (S'Range);
-      P : Positive := S'Last;
-      Cap_Next : Boolean := Capitalization = Capitalized;
+      P        : Positive := S'Last;
+      Cap_Next : Boolean  := Capitalization = Capitalized;
 
    begin
       case Capitalization is
-         when No_Change =>
+         when nO_cHaNGe =>
             T := S;
-         when Lower =>
+
+         when lower =>
             T := Translate (S, Lower_Case_Map);
-         when Upper =>
+
+         when UPPER =>
             T := Translate (S, Upper_Case_Map);
-         when Capitalized | Camelback  =>
+
+         when Capitalized | camelBack =>
             T := Translate (S, Lower_Case_Map);
+
             for I in T'Range loop
                if Cap_Next then
-                  T (I) := Value (Upper_Case_Map, T (I));
+                  T (I)    := Value (Upper_Case_Map, T (I));
                   Cap_Next := False;
                end if;
                Cap_Next := T (I) = '_';
@@ -72,10 +74,11 @@ package body McKae.Text.Lexicals is
 
       if Remove_Underscores then
          P := T'First;
+
          for I in T'Range loop
             if T (I) /= '_' then
                T (P) := T (I);
-               P := P + 1;
+               P     := P + 1;
             end if;
          end loop;
          P := P - 1;

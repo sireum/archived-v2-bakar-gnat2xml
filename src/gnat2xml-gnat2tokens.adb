@@ -2,11 +2,11 @@
 --                                                                          --
 --                            GNAT2XML COMPONENTS                           --
 --                                                                          --
---              G E N E R I C _ F O R M A T T E D _ O U T P U T             --
+--                 G N A T 2 X M L . G N A T 2 T O K E N S                  --
 --                                                                          --
---                                 S p e c                                  --
+--                                 B o d y                                  --
 --                                                                          --
---                    Copyright (C) 2012, AdaCore, Inc.                     --
+--                  Copyright (C) 2012-2013, AdaCore, Inc.                  --
 --                                                                          --
 -- Gnat2xml is free software; you can redistribute it and/or modify it      --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -21,37 +21,43 @@
 -- The gnat2xml tool was derived from the Avatox sources.                   --
 ------------------------------------------------------------------------------
 
-with Namet;
+pragma Ada_2012;
 
-generic
-   with procedure Basic_Put_Char (C : Character);
-package Generic_Formatted_Output is
+with Ada.Command_Line; use Ada.Command_Line;
 
-   --  Simple formatted output.
+with GNAT.OS_Lib; use GNAT.OS_Lib;
 
-   --  Client passes in Basic_Put_Char, which determines where the output
-   --  characters go.
+with ASIS_UL.Formatted_Output; use ASIS_UL.Formatted_Output;
+with Ada_Trees.Buffers; use Ada_Trees.Buffers;
+with Ada_Trees.Scanner; use Ada_Trees.Scanner;
 
-   type Template is new String;
-   procedure Put (T : Template; X1, X2, X3, X4 : String := "");
-   --  Prints the template as is, except for the following escape
-   --  characters:
-   --    "\n" is end of line.
-   --    "\1" is replaced with X1, and similarly for 2, 3, 4.
-   --    "\\" is "\".
+procedure Gnat2xml.Gnat2tokens is
+begin
+   if Argument_Count = 0 then
+      raise Program_Error with "missing arguments";
+   end if;
 
-   procedure Put_Char (C : Character);
-   --  Same as Put ("\1", (1 => C));
+   for X in 1 .. Argument_Count loop
+      if Argument (X) = "--debug" then
+         Debug_Mode := True;
 
-   Default_Indentation_Amount : constant Natural := 3;
+      else
+         declare
+            Source_File_Name     : constant String := Argument (X);
+            Source_File_Contents : String_Access   :=
+              Read_File (Source_File_Name);
+            Buf : Buffer := String_To_Buffer (Source_File_Contents.all);
+            Tokens : Token_Vectors.Vector;
 
-   procedure Indent
-     (Indentation_Amount : Natural := Default_Indentation_Amount);
-   procedure Outdent
-     (Indentation_Amount : Natural := Default_Indentation_Amount);
-   --  Increase/decrease indentation level by given number of spaces
+         begin
+            Get_Tokens (Buf, Tokens);
+            Put ("-- Processing \1\n", Source_File_Name);
+            Put_Tokens (Tokens);
+            Free (Source_File_Contents);
+            Put ("\n\n\n");
+         end;
+      end if;
+   end loop;
 
-   procedure Set_Indentation (Indentation_Amount : Natural);
-   --  Set the indentation level
-
-end Generic_Formatted_Output;
+   Main_Done := True;
+end Gnat2xml.Gnat2tokens;

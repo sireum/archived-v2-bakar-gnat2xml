@@ -6,7 +6,7 @@
 --                                                                          --
 --                                 B o d y                                  --
 --                                                                          --
---                    Copyright (C) 2012, AdaCore, Inc.                     --
+--                      Copyright (C) 2012-2013, AdaCore                    --
 --                                                                          --
 -- Gnat2xml is free software; you can redistribute it and/or modify it      --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -26,11 +26,10 @@ pragma Ada_2012;
 with Ada.Characters.Handling; use Ada.Characters.Handling;
 with Ada.Command_Line;
 
-with Formatted_Output; use Formatted_Output;
-with Strings;          use Strings;
+with ASIS_UL.Formatted_Output; use ASIS_UL.Formatted_Output;
 
 with Gnat2xml_Versioning;
-with Gnat2xml.Ada_Trees; use Gnat2xml.Ada_Trees;
+with Ada_Trees; use Ada_Trees;
 
 package body Gnat2xml.Xsd is
 
@@ -41,58 +40,66 @@ package body Gnat2xml.Xsd is
    --  the types inside Generate_Schema and use a storage pool. Or use Ada 2012
    --  subpools.
 
+   use A4G.Queries;
+
    --  Data structures for representing XML elements and attributes:
 
    type WStr_Ptr is access String;
 
-   type Xml_Attribute is
-      record
-         Attr : WStr_Ptr;
-         Val  : WStr_Ptr;
-      end record;
+   type Xml_Attribute is record
+      Attr : WStr_Ptr;
+      Val  : WStr_Ptr;
+   end record;
 
    type Xml_Attribute_Index is new Positive;
+
    type Xml_Attribute_Seq is
      array (Xml_Attribute_Index range <>) of Xml_Attribute;
+
    type Xml_Attribute_Seq_Ptr is access Xml_Attribute_Seq;
 
    function Empty return Xml_Attribute_Seq;
 
    type Xml_Element_Seq;
+
    type Xml_Element_Seq_Ptr is access Xml_Element_Seq;
 
-   type Xml_Element is
-      record
-         Tag : WStr_Ptr;
-         Attrs : Xml_Attribute_Seq_Ptr;
-         Sub_Elements : Xml_Element_Seq_Ptr;
-      end record;
+   type Xml_Element is record
+      Tag          : WStr_Ptr;
+      Attrs        : Xml_Attribute_Seq_Ptr;
+      Sub_Elements : Xml_Element_Seq_Ptr;
+   end record;
 
    type Xml_Element_Ptr is access Xml_Element;
+
    type Xml_Element_Index is new Positive;
    subtype Xml_Element_Count is
      Xml_Element_Index'Base range 0 .. Xml_Element_Index'Last;
+
    type Xml_Element_Seq is
      array (Xml_Element_Index range <>) of Xml_Element_Ptr;
 
    function Empty return Xml_Element_Seq;
 
-   function "+" (X : Xml_Attribute) return Xml_Attribute_Seq is
-      ((1 => X));
-   function "+" (X : Xml_Element_Ptr) return Xml_Element_Seq is
-      ((1 => X));
+   function "+" (X : Xml_Attribute) return Xml_Attribute_Seq is ((1 => X));
+   function "+" (X : Xml_Element_Ptr) return Xml_Element_Seq is ((1 => X));
    --  Return singleton sequence
 
    function Attr (Attr, Val : String) return Xml_Attribute;
    --  Construct an XML attribute Attr="Val"
 
    function Xml_Elem
-     (Tag : String;
-      Attrs : Xml_Attribute_Seq;
-      Sub_Elements : Xml_Element_Seq) return Xml_Element_Ptr;
+     (Tag          : String;
+      Attrs        : Xml_Attribute_Seq;
+      Sub_Elements : Xml_Element_Seq)
+     return Xml_Element_Ptr;
    --  Construct an XML element
 
    procedure Put_Comment (Comment : String);
+
+   procedure C (Comment : String) renames Put_Comment;
+   procedure P (T       : Template);
+   --  Shorthands
 
    procedure Put (X : Xml_Attribute);
    procedure Put (X : Xml_Attribute_Seq_Ptr);
@@ -132,41 +139,43 @@ package body Gnat2xml.Xsd is
       Compact_XML : Boolean := False;
 
       Compact_Sloc_Attrs : constant Xml_Element_Seq :=
-        -- These are the attributes of an element in Compact_XML mode
+      --  These are the attributes of an element in Compact_XML mode
+
         +Xml_Elem
           ("xsd:attribute",
            (Attr ("name", "sloc"),
-            Attr ("type", "Source_Location"),
-            Attr ("use", "required")),
+           Attr ("type", "Source_Location"),
+           Attr ("use", "required")),
            Empty);
 
       Verbose_Sloc_Attrs : constant Xml_Element_Seq :=
-        --  These are the attributes of the Source_Location element in
-        --  non-Compact_XML mode. In this case, each element has a Sloc
-        --  sub-element.
+      --  These are the attributes of the Source_Location element in
+      --  non-Compact_XML mode. In this case, each element has a Sloc
+      --  sub-element.
+
         (Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "line"),
-             Attr ("type", "xsd:int"),
-             Attr ("use", "required")),
+            Attr ("type", "xsd:positiveInteger"),
+            Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "col"),
-             Attr ("type", "xsd:int"),
-             Attr ("use", "required")),
+            Attr ("type", "xsd:positiveInteger"),
+            Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "endline"),
-             Attr ("type", "xsd:int"),
-             Attr ("use", "required")),
+            Attr ("type", "xsd:nonNegativeInteger"),
+            Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "endcol"),
-             Attr ("type", "xsd:int"),
-             Attr ("use", "required")),
+            Attr ("type", "xsd:nonNegativeInteger"),
+            Attr ("use", "required")),
             Empty));
 
       function Element_Name (Kind : Flat_Element_Kinds'Base) return String;
@@ -179,18 +188,20 @@ package body Gnat2xml.Xsd is
       function Queries (Qs : Query_List) return Xml_Element_Seq;
       --  Query elements corresponding to the Query_List
 
-      procedure Put_Abstract_Class_Or_List (Kind: Flat_Element_Kinds'Base);
+      procedure Put_Abstract_Class_Or_List (Kind : Flat_Element_Kinds'Base);
       --  Prints out the xsd:choice xsd:complexType, consisting of the union of
       --  all kinds in the class. If Kind is a list type, then we allow zero or
       --  more occurrences, otherwise just one.
 
-      procedure Put_Group (Class: Flat_Element_Kinds'Base);
+      procedure Put_Group (Class : Flat_Element_Kinds'Base);
       --  Prints out the xsd:group element, currently used only for
       --  pragmas_group.
 
       procedure Put_ASIS_Elem (Kind : Opt_ASIS_Elems);
       --  Prints out the xsd:element for the specified Kind, along with its
       --  type, an xsd:complexType.
+
+      procedure Process_Command_Line;
 
       ------------------
       -- Element_Name --
@@ -211,30 +222,35 @@ package body Gnat2xml.Xsd is
       --------------------------------
 
       Num_Pragmas : constant Xml_Element_Count :=
-        Xml_Element_Count (Cardinality (Kinds_In_Class (A_Pragma_Element_Class)));
+        Xml_Element_Count
+          (Cardinality (Kinds_In_Class (A_Pragma_Element_Class)));
 
-      procedure Put_Abstract_Class_Or_List (Kind: Flat_Element_Kinds'Base) is
+      procedure Put_Abstract_Class_Or_List (Kind : Flat_Element_Kinds'Base) is
          Class : constant Flat_Element_Kinds'Base :=
-           (if Kind in Flat_List_Kinds
-              then List_Component_Type (Kind)
-              else Kind);
+           (if Kind in Flat_List_Kinds then
+               List_Component_Type (Kind)
+            else
+               Kind);
          Kinds : constant Kind_Set := Kinds_In_Class (Class);
-         Choices : Xml_Element_Seq
-           (1 .. Xml_Element_Index (Cardinality (Kinds)) - Num_Pragmas + 1);
+         Choices : Xml_Element_Seq (
+           1 ..
+             Xml_Element_Index (Cardinality (Kinds)) - Num_Pragmas + 1);
          --  1 for each Kind, minus the pragma Kinds, plus 1 for the pragma
          --  group.
          Last : Xml_Element_Count := 0;
 
          Occurs : constant Xml_Attribute_Seq :=
-           (if Kind in Flat_List_Kinds
-              then (Attr ("minOccurs", "0"), Attr ("maxOccurs", "unbounded"))
-              else +Attr ("maxOccurs", "1"));
+           (if Kind in Flat_List_Kinds then
+               (Attr ("minOccurs", "0"), Attr ("maxOccurs", "unbounded"))
+            else
+               +Attr ("maxOccurs", "1"));
+
       begin
          --  We skip the pragma Kinds, and add them on at the end as a "group"
 
          for K in Kinds'Range loop
             if K not in Flat_Pragma_Kinds and then Kinds (K) then
-               Last := Last + 1;
+               Last           := Last + 1;
                Choices (Last) :=
                  Xml_Elem
                    ("xsd:element",
@@ -243,12 +259,9 @@ package body Gnat2xml.Xsd is
             end if;
          end loop;
 
-         Last := Last + 1;
+         Last           := Last + 1;
          Choices (Last) :=
-           Xml_Elem
-             ("xsd:group",
-              +Attr ("ref", "pragmas_group"),
-              Empty);
+           Xml_Elem ("xsd:group", +Attr ("ref", "pragmas_group"), Empty);
 
          pragma Assert (Last = Choices'Last);
 
@@ -256,10 +269,7 @@ package body Gnat2xml.Xsd is
            (Xml_Elem
               ("xsd:complexType",
                +Attr ("name", Type_Name (Kind)),
-               +XML_Elem
-                 ("xsd:choice",
-                  Occurs,
-                  Choices)));
+               +Xml_Elem ("xsd:choice", Occurs, Choices)));
          Put ("\n");
       end Put_Abstract_Class_Or_List;
 
@@ -267,20 +277,22 @@ package body Gnat2xml.Xsd is
       -- Put_Group --
       ---------------
 
-      procedure Put_Group (Class: Flat_Element_Kinds'Base) is
+      procedure Put_Group (Class : Flat_Element_Kinds'Base) is
          pragma Assert (Class = A_Pragma_Element_Class); -- for now
          Kinds : constant Kind_Set := Kinds_In_Class (Class);
-         Choices : Xml_Element_Seq
-           (1 .. Xml_Element_Index (Cardinality (Kinds)));
+         Choices : Xml_Element_Seq (
+           1 ..
+             Xml_Element_Index (Cardinality (Kinds)));
          Last : Xml_Element_Count := 0;
+
       begin
          for K in Kinds'Range loop
             if Kinds (K) then
-               Last := Last + 1;
+               Last           := Last + 1;
                Choices (Last) :=
                  Xml_Elem
                    ("xsd:element",
-                    +Attr ("ref", Element_Name (K)),
+                    +Attr ("name", Element_Name (K)),
                     Empty);
             end if;
          end loop;
@@ -291,10 +303,7 @@ package body Gnat2xml.Xsd is
            (Xml_Elem
               ("xsd:group",
                +Attr ("name", "pragmas_group"),
-               +XML_Elem
-                 ("xsd:choice",
-                  Empty,
-                  Choices)));
+               +Xml_Elem ("xsd:choice", Empty, Choices)));
          Put ("\n");
       end Put_Group;
 
@@ -305,180 +314,185 @@ package body Gnat2xml.Xsd is
       procedure Put_ASIS_Elem (Kind : Opt_ASIS_Elems) is
          Qs : Query_List renames Appropriate_Queries (Kind).all;
          pragma Assert (Qs'First = 1);
-         QQ : constant Xml_Element_Seq := Queries (Qs);
-         QQ_Sloc : constant Xml_Element_Seq :=
-           (if Compact_XML
-              then QQ
-              else Xml_Elem
-                    ("xsd:element",
-                     (Attr ("name", "sloc"),
-                      Attr ("type", "Source_Location")),
-                     Empty) &
-                QQ);
+         QQ      : constant Xml_Element_Seq := Queries (Qs);
+         QQ_Sloc : constant Xml_Element_Seq := (if Compact_XML then
+               QQ
+            else
+               Xml_Elem
+                 ("xsd:element",
+                  (Attr ("name", "sloc"), Attr ("type", "Source_Location")),
+                  Empty) &
+               QQ);
 
          Subelements : constant Xml_Element_Seq :=
-         --  The sequence of Sloc and query elements, except we want Empty if
-         --  there are none.
-           (if QQ_Sloc'Length = 0
-              then Empty
-              else +Xml_Elem ("xsd:sequence", Empty, QQ_Sloc));
+               --  The sequence of Sloc and query elements, except we want
+               --  Empty if there are none.
+                (if QQ_Sloc'Length = 0 then
+               Empty
+            else
+               +Xml_Elem ("xsd:sequence", Empty, QQ_Sloc));
 
          Unit_Kind_Attrs : constant Xml_Element_Seq :=
-           (if Kind in A_Compilation_Unit
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "unit_kind"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if Kind in A_Compilation_Unit then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "unit_kind"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
          Unit_Class_Attrs : constant Xml_Element_Seq :=
-           (if Kind in A_Compilation_Unit
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "unit_class"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if Kind in A_Compilation_Unit then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "unit_class"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
          Unit_Origin_Attrs : constant Xml_Element_Seq :=
-           (if Kind in A_Compilation_Unit
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "unit_origin"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if Kind in A_Compilation_Unit then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "unit_origin"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
          Unit_Full_Name_Attrs : constant Xml_Element_Seq :=
-           (if Kind in A_Compilation_Unit
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "unit_full_name"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if Kind in A_Compilation_Unit then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "unit_full_name"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
          Def_Name_Attrs : constant Xml_Element_Seq :=
-           (if Kind in A_Compilation_Unit | Def_Names
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "def_name"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if Kind in A_Compilation_Unit | Def_Names then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "def_name"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
          Ref_Name_Attrs : constant Xml_Element_Seq :=
-           (if Kind in Usage_Names
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "ref_name"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if Kind in Usage_Names then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "ref_name"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
-         Source_File_Attrs : constant Xml_Element_Seq :=
-           (case Kind is
-              when A_Compilation_Unit =>
-                +Xml_Elem
-                  ("xsd:attribute",
-                   (Attr ("name", "source_file"),
-                    Attr ("type", "xsd:string"),
-                    Attr ("use", "required")),
-                   Empty),
-              when others => Empty
-           );
+         Source_File_Attrs : constant Xml_Element_Seq := (case Kind is
+               when A_Compilation_Unit =>
+                  +Xml_Elem
+                    ("xsd:attribute",
+                     (Attr ("name", "source_file"),
+                     Attr ("type", "xsd:string"),
+                     Attr ("use", "required")),
+                     Empty),
+               when others =>
+                  Empty);
 
-         Def_Attrs : constant Xml_Element_Seq :=
-           (case Kind is
-              when Not_An_Element => Empty,
-              --  ???when Usage_Names | Boolean_Elems | Other_Elems => Empty,
-              --  Triggers infinite loop in Is_From_Unknown_Pragma.
-              when Def_Names =>
-                +Xml_Elem
-                  ("xsd:attribute",
-                   (Attr ("name", "def"),
-                    Attr ("type", "xsd:string"),
-                    Attr ("use", "required")),
-                   Empty),
-              when others => Empty
-           );
+         Def_Attrs : constant Xml_Element_Seq := (case Kind is
+               when Not_An_Element =>
+                  Empty,
+                  --  ???when Usage_Names | Boolean_Elems |
+                  --  Other_Elems => Empty,
+                  --  Triggers infinite loop in Is_From_Unknown_Pragma.
+               when Def_Names =>
+                  +Xml_Elem
+                    ("xsd:attribute",
+                     (Attr ("name", "def"),
+                     Attr ("type", "xsd:string"),
+                     Attr ("use", "required")),
+                     Empty),
+               when others =>
+                  Empty);
 
-         Ref_Attrs : constant Xml_Element_Seq :=
-           (case Kind is
-              when Not_An_Element => Empty,
-              --  ???when Def_Names | Other_Elems => Empty,
-              when Usage_Names =>
-                +Xml_Elem
-                  ("xsd:attribute",
-                   (Attr ("name", "ref"),
-                    Attr ("type", "xsd:string"),
-                    Attr ("use", "required")),
-                   Empty),
-              when others => Empty
-           );
+         Ref_Attrs : constant Xml_Element_Seq := (case Kind is
+               when Not_An_Element =>
+                  Empty,
+                  --  ???when Def_Names | Other_Elems => Empty,
+               when Usage_Names =>
+                  +Xml_Elem
+                    ("xsd:attribute",
+                     (Attr ("name", "ref"),
+                     Attr ("type", "xsd:string"),
+                     Attr ("use", "required")),
+                     Empty),
+               when others =>
+                  Empty);
 
          Lit_Val_Attrs : constant Xml_Element_Seq :=
-           (if Kind in An_Integer_Literal | A_Real_Literal | A_String_Literal
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "lit_val"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if
+              Kind in An_Integer_Literal | A_Real_Literal | A_String_Literal
+            then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "lit_val"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
          Type_Attrs : constant Xml_Element_Seq :=
-           (if Kind in Def_Names | Flat_Expression_Kinds
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "type"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if Kind in Def_Names | Flat_Expression_Kinds then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "type"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
          Pragma_Name_Attrs : constant Xml_Element_Seq :=
-           (if Kind in Flat_Pragma_Kinds
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "pragma_name"),
-                       Attr ("type", "xsd:string"),
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if Kind in Flat_Pragma_Kinds then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "pragma_name"),
+                  Attr ("type", "xsd:string"),
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
 
          Mode_Attrs : constant Xml_Element_Seq :=
-           (if Kind in A_Parameter_Specification | A_Formal_Object_Declaration
-              then +Xml_Elem
-                     ("xsd:attribute",
-                      (Attr ("name", "mode"),
-                       Attr ("type", "xsd:string"),
-                       --  ???Could be more specific type
-                       Attr ("use", "required")),
-                      Empty)
-              else Empty
-           );
+           (if
+              Kind in A_Parameter_Specification | A_Formal_Object_Declaration
+            then
+               +Xml_Elem
+                 ("xsd:attribute",
+                  (Attr ("name", "mode"),
+                  Attr ("type", "xsd:string"),
+               --  ???Could be more specific type
 
-         Sloc_Attrs : constant Xml_Element_Seq :=
-           (if Compact_XML
-              then Compact_Sloc_Attrs
-              else Empty);
+                  Attr ("use", "required")),
+                  Empty)
+            else
+               Empty);
+
+         Sloc_Attrs : constant Xml_Element_Seq := (if Compact_XML then
+               Compact_Sloc_Attrs
+            else
+               Empty);
 
          Attrs : constant Xml_Element_Seq :=
            Unit_Kind_Attrs &
@@ -503,7 +517,7 @@ package body Gnat2xml.Xsd is
            (Xml_Elem
               ("xsd:element",
                (Attr ("name", Element_Name (Kind)),
-                Attr ("type", Type_Name (Kind))),
+               Attr ("type", Type_Name (Kind))),
                Empty));
 
          Put ("\n");
@@ -522,63 +536,80 @@ package body Gnat2xml.Xsd is
 
       function Queries (Qs : Query_List) return Xml_Element_Seq is
          Result : Xml_Element_Seq (1 .. Xml_Element_Index'Base (Qs'Length));
+
       begin
          for J in Qs'Range loop
             declare
                JJ : constant Xml_Element_Index := Xml_Element_Index (J);
+
             begin
                declare
-                  Q : constant Structural_Queries := Qs (J);
-                  Syntax : constant Func_Elem := Get_Func_Elem (Q);
-                  Query_Suffix : constant String :=
-                    (case Syntax.Query_Kind is
-                       when Bug =>
-                          "? ? ?", -- can't happen
-                       when Single_Element_Query |
-                            Single_Element_CU_Query |
-                            Boolean_Query =>
-                          "_q",
-                       when Element_List_CU_Query |
-                            Element_List_Query |
-                            Element_List_Query_With_Boolean =>
-                          "_ql");
+                  Q            : constant Structural_Queries := Qs (J);
+                  Syntax       : constant Func_Elem := Get_Func_Elem (Q);
+                  Query_Suffix : constant String := (case Syntax.Query_Kind is
+                        when Bug =>
+                           "? ? ?", -- can't happen
+                        when
+                          Single_Element_Query |
+                          Single_Element_CU_Query |
+                          Boolean_Query =>
+                           "_q",
+                        when
+                          Element_List_CU_Query |
+                          Element_List_Query |
+                          Element_List_Query_With_Boolean =>
+                           "_ql");
                   Q_Type : constant Flat_Element_Kinds'Base :=
                     Query_Result_Types (Q);
                   Bool_Kind : Boolean_Elems;
+
                begin
                   if Q_Type in Boolean_Elems then
-                     Bool_Kind := Query_Result_Types (Qs (J));
-                     Result (JJ) := Xml_Elem
-                       ("xsd:element",
-                        +Attr ("name", Element_Name (Qs (J)) & Query_Suffix),
-                        +Xml_Elem
-                          ("xsd:complexType",
-                           Empty,
-                           +Xml_Elem
-                             ("xsd:choice",
-                              Empty,
-                              (Xml_Elem
-                                 ("xsd:element",
-                                  (Attr ("name", Element_Name (Bool_Kind)),
+                     Bool_Kind   := Query_Result_Types (Qs (J));
+                     Result (JJ) :=
+                       Xml_Elem
+                         ("xsd:element",
+                          +Attr
+                            ("name",
+                             Element_Name (Qs (J)) & Query_Suffix),
+                          +Xml_Elem
+                            ("xsd:complexType",
+                             Empty,
+                             +Xml_Elem
+                               ("xsd:choice",
+                                Empty,
+                                (Xml_Elem
+                                  ("xsd:element",
+                                   (Attr ("name", Element_Name (Bool_Kind)),
                                    Attr ("type", Type_Name (Bool_Kind))),
-                                  Empty),
-                               Xml_Elem
-                                 ("xsd:element",
-                                  (Attr ("name", Element_Name (Not_An_Element)),
+                                   Empty),
+                                Xml_Elem
+                                  ("xsd:element",
+                                   (Attr
+                                     ("name",
+                                      Element_Name (Not_An_Element)),
                                    Attr ("type", Type_Name (Not_An_Element))),
-                                  Empty)))));
+                                   Empty)))));
+
                   else
                      --  ???A_Component_Definition and A_Subtype_Indication
                      --  should really have their own classes.
-                     Result (JJ) := Xml_Elem
-                       ("xsd:element",
-                        (Attr ("name", Element_Name (Qs (J)) & Query_Suffix),
-                         Attr ("type", (if Q_Type in
-                                            A_Component_Definition |
-                                            A_Subtype_Indication
-                                          then "Element_Class"
-                                          else Type_Name (Q_Type)))),
-                        Empty);
+                     Result (JJ) :=
+                       Xml_Elem
+                         ("xsd:element",
+                          (Attr
+                            ("name",
+                             Element_Name (Qs (J)) & Query_Suffix),
+                          Attr
+                            ("type",
+                             (if
+                               Q_Type in
+                                 A_Component_Definition |
+                                   A_Subtype_Indication
+                             then
+                                "Element_Class"
+                             else
+                                Type_Name (Q_Type)))), Empty);
                   end if;
                end;
             end;
@@ -593,37 +624,34 @@ package body Gnat2xml.Xsd is
 
       function Type_Name (Kind : Flat_Element_Kinds'Base) return String is
       begin
-         return Strip_Article
-           (Capitalize (Opt_ASIS_Elems'Image (Kind)));
+         return Strip_Article (Capitalize (Opt_ASIS_Elems'Image (Kind)));
       end Type_Name;
 
       procedure Process_Command_Line is
          use Ada.Command_Line;
+
       begin
          case Argument_Count is
             when 0 =>
                null;
+
             when 1 =>
                if Argument (1) = "-q" then
                   Compact_XML := True;
+
                else
-                  raise Program_Error with
-                    "???Unrecognized argument: " & Argument (1);
+                  raise Program_Error
+                    with "???Unrecognized argument: " & Argument (1);
                end if;
+
             when others =>
                raise Program_Error with "???Too many arguments";
                --  Above "raises" should be proper error messages
          end case;
       end Process_Command_Line;
 
-      procedure C (Comment : String) renames Put_Comment;
+   --  Start of processing for Generate_Schema
 
-      procedure P (T : Template) is
-      begin
-         Put (T);
-      end P;
-
-      --  Start of processing for Generate_Schema
    begin
       Process_Command_Line;
 
@@ -642,17 +670,13 @@ package body Gnat2xml.Xsd is
       P ("\n");
 
       Gnat2xml_Versioning.Print_Version_Info
-        (Tool_Name => "gnat2xsd", First_Release_Year => "2012");
-      P ("         Copyright (C) 2013, Kansas State University\n");
-      P ("\n");
+        (Tool_Name          => "gnat2xsd",
+         First_Release_Year => "2012");
 
-      P ("This schema is open source and is licensed under the Eclipse Public\n");
+      P ("\n");
+      P ("This schema is open source and is licensed " &
+         "under the Eclipse Public\n");
       P ("License (EPL). See http://www.eclipse.org/legal/epl-v10.html\n");
-      P ("\n");
-
-      P ("This material is based upon work supported by the U.S. Air Force\n");
-      P ("Office of Scientific Research, Funded Through Kansas State University,\n");
-      P ("Under Award No. FA9550-09-0138.\n");
 
       P ("\n");
       P ("\n");
@@ -697,7 +721,10 @@ package body Gnat2xml.Xsd is
                  ("xsd:restriction",
                   +Attr ("base", "xsd:string"),
                   +Xml_Elem
-                    ("xsd:pattern", +Attr ("value", "\d+:\d+"), Empty))));
+                    ("xsd:pattern",
+                     +Attr ("value", "\d+:\d+"),
+                     Empty))));
+
       else
          Put
            (Xml_Elem
@@ -768,6 +795,15 @@ package body Gnat2xml.Xsd is
       Outdent;
       P ("</xsd:schema>\n");
    end Generate_Schema;
+
+   -------
+   -- P --
+   -------
+
+   procedure P (T : Template) is
+   begin
+      Put (T);
+   end P;
 
    ---------
    -- Put --
@@ -842,14 +878,17 @@ package body Gnat2xml.Xsd is
    --------------
 
    function Xml_Elem
-     (Tag : String;
-      Attrs : Xml_Attribute_Seq;
-      Sub_Elements : Xml_Element_Seq) return Xml_Element_Ptr is
+     (Tag          : String;
+      Attrs        : Xml_Attribute_Seq;
+      Sub_Elements : Xml_Element_Seq)
+     return Xml_Element_Ptr
+   is
    begin
-      return new Xml_Element'
-        (new String'(Tag),
-         new Xml_Attribute_Seq'(Attrs),
-         new Xml_Element_Seq'(Sub_Elements));
+      return
+        new Xml_Element'
+          (new String'(Tag),
+          new Xml_Attribute_Seq'(Attrs),
+          new Xml_Element_Seq'(Sub_Elements));
    end Xml_Elem;
 
 end Gnat2xml.Xsd;

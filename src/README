@@ -1,6 +1,10 @@
         GNAT2XML
         ========
 
+   GNAT2XML is based upon work supported by the U.S. Air Force
+   Office of Scientific Research, funded through Kansas State University,
+   under Award No. FA9550-09-0138.
+
 Gnat2xml Command-Line Options
 =============================
 
@@ -32,6 +36,8 @@ Options:
 
     -t -- do not delete tree files when done (they are deleted by default).
 
+    -cargs ... -- options to pass to gcc
+
 You can generate the "tree files" ahead of time using the -gnatct switch:
 
     gnatmake -gnat2012 -gnatct *.ad[sb]
@@ -41,9 +47,8 @@ See the ASIS documentation for more information on tree files.
 
 Example:
 
-    gnatmake -gnat2012 -gnatct *.ad[sb]
     mkdir xml-files
-    gnat2xml -v -t -mxml-files *.ad[sb]
+    gnat2xml -v -mxml-files *.ad[sb] -cargs -gnat2012
 
 The above will create *.xml files in the 'xml-files' subdirectory.
 For example, if there is an Ada package Mumble.Dumble, whose spec and
