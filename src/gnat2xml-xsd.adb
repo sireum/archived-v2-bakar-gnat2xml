@@ -156,25 +156,25 @@ package body Gnat2xml.Xsd is
         (Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "line"),
-            Attr ("type", "xsd:positiveInteger"),
+            Attr ("type", "xsd:int"),
             Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "col"),
-            Attr ("type", "xsd:positiveInteger"),
+            Attr ("type", "xsd:int"),
             Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "endline"),
-            Attr ("type", "xsd:nonNegativeInteger"),
+            Attr ("type", "xsd:int"),
             Attr ("use", "required")),
             Empty),
          Xml_Elem
            ("xsd:attribute",
             (Attr ("name", "endcol"),
-            Attr ("type", "xsd:nonNegativeInteger"),
+            Attr ("type", "xsd:int"),
             Attr ("use", "required")),
             Empty));
 
@@ -292,7 +292,7 @@ package body Gnat2xml.Xsd is
                Choices (Last) :=
                  Xml_Elem
                    ("xsd:element",
-                    +Attr ("name", Element_Name (K)),
+                    +Attr ("ref", Element_Name (K)),
                     Empty);
             end if;
          end loop;
