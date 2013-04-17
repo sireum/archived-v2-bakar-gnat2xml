@@ -7,7 +7,7 @@
 --                                                                          --
 --                                                                          --
 --                Copyright (C) 2006, McKae Technologies.                   --
---                Copyright (C) 2012, AdaCore, Inc.                         --
+--                Copyright (C) 2012-2013, AdaCore, Inc.                    --
 --                                                                          --
 -- Avatox is free software; you can redistribute it and/or modify it        --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -29,31 +29,24 @@
 -- The gnat2xml tool was derived from the Avatox sources.                   --
 ------------------------------------------------------------------------------
 
-with Ada.Containers.Vectors;
+pragma Ada_2012;
 
 with Asis; use Asis;
-with Asis.Elements;
-with Asis.Extensions.Iterator; use Asis.Extensions.Iterator;
-with Text_Io;
-with Gnat2xml.Xsl_Transformation;
+with Text_IO;
 
 package Gnat2xml.Xml is
 
-   type Info_Node is
-      record
-         XML_File      : Text_Io.File_Access;
-         Krunch        : Boolean      := False;
-         Xml_Style     : Boolean      := False;
-         Xsl_Info      : Xsl_Transformation.Xsl_Information;
-         Last_Element  : Asis.Element := Asis.Nil_Element;
-         Verbose       : Boolean      := False;
-      end record;
+   type Info_Node is record
+      XML_File : Text_IO.File_Access;
+      Krunch    : Boolean := False;
+      Xml_Style : Boolean := False;
+      Verbose : Boolean := False;
+   end record;
 
-   procedure Start_Representation
-     (State : in out Info_Node);
+   procedure Start_Representation (State : Info_Node);
 
    procedure Process_Unit
-     (The_Unit : in     Asis.Compilation_Unit;
-      State    : in out Info_Node);
+     (The_Unit : Asis.Compilation_Unit;
+      State    : Info_Node);
 
 end Gnat2xml.Xml;

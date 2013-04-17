@@ -27,8 +27,8 @@
 -- The McKae Software Utilities  are maintained by McKae Technologies --
 -- (http://www.mckae.com).                                            --
 ------------------------------------------------------------------------
-package Mckae.Environment is
+package McKae.Environment is
 
    pragma Pure;
 
-end Mckae.Environment;
+end McKae.Environment;

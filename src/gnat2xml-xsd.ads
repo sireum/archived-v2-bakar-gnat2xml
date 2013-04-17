@@ -6,7 +6,7 @@
 --                                                                          --
 --                                 S p e c                                  --
 --                                                                          --
---                    Copyright (C) 2012, AdaCore, Inc.                     --
+--                  Copyright (C) 2012-2013, AdaCore, Inc.                  --
 --                                                                          --
 -- Gnat2xml is free software; you can redistribute it and/or modify it      --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -21,9 +21,9 @@
 -- The gnat2xml tool was derived from the Avatox sources.                   --
 ------------------------------------------------------------------------------
 
---  XSD-related support.
+pragma Ada_2012;
 
-with A4g.Queries; use A4g.Queries;
+--  XSD-related support.
 
 package Gnat2xml.Xsd is
 

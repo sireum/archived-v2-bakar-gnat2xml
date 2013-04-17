@@ -6,7 +6,7 @@
 --                                                                          --
 --                                 S p e c                                  --
 --                                                                          --
---                    Copyright (C) 2012, AdaCore, Inc.                     --
+--                Copyright (C) 2012-2013, AdaCore, Inc.                    --
 --                                                                          --
 -- Gnat2xml is free software; you can redistribute it and/or modify it      --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -21,9 +21,11 @@
 -- The gnat2xml tool was derived from the Avatox sources.                   --
 ------------------------------------------------------------------------------
 
+pragma Ada_2012;
+
 --  Conversion from XML to Ada_Tree
 
-with Gnat2xml.Ada_Trees; use Gnat2xml.Ada_Trees;
+with Ada_Trees; use Ada_Trees;
 
 package Gnat2xml.Xml2tree is
 

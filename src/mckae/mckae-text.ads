@@ -29,4 +29,4 @@
 ------------------------------------------------------------------------
 package McKae.Text is
 
-end Mckae.Text;
+end McKae.Text;

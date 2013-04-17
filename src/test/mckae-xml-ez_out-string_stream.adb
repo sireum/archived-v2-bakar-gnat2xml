@@ -98,6 +98,3 @@ package body Mckae.XML.EZ_Out.String_Stream is
    end String_Buffering;
 
 end Mckae.XML.EZ_Out.String_Stream;
-
-
-

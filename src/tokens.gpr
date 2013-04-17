@@ -1,11 +1,9 @@
---  Project file used by Makefile to build the stage 2 version
-
 with "xmlada";
-with "../../../../../asis";
---  This gets copied into .../ASIS/tools/gnat2xml/stage/1/generated_ada,
+with "../../../../asis";
+--  This gets copied into .../ASIS/tools/gnat2xml/stage/tokens,
 --  and we're referring to .../ASIS/asis.gpr.
 
-project Boot extends "../../../../tool_utils/tool_utils" is
+project Tokens extends "../../../tool_utils/tool_utils" is
    --  And here we're referring to .../ASIS/tool_utils/tool_utils.gpr.
 
    for Source_Dirs use (".");
@@ -17,8 +15,7 @@ project Boot extends "../../../../tool_utils/tool_utils" is
                  "gnat2xml-strip_comments.adb");
 
    package Compiler is
---      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnatyg"); -- ???
-      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato", "-gnatyg", "-gnatwe"); -- ???
+      for Default_Switches ("ada") use ("-O0", "-g", "-gnata", "-gnato");
    end Compiler;
 
    package Builder is
@@ -27,4 +24,4 @@ project Boot extends "../../../../tool_utils/tool_utils" is
       for Executable ("gnat2xml-xml2gnat.adb") use "xml2gnat";
    end Builder;
 
-end Boot;
+end Tokens;

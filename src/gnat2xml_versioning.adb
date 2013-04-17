@@ -7,7 +7,7 @@
 --                                                                          --
 --                                                                          --
 --                Copyright (C) 2006, McKae Technologies.                   --
---                Copyright (C) 2012, AdaCore, Inc.                         --
+--                Copyright (C) 2012-2013, AdaCore, Inc.                    --
 --                                                                          --
 -- Avatox is free software; you can redistribute it and/or modify it        --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -29,9 +29,11 @@
 -- The gnat2xml tool was derived from the Avatox sources.                   --
 ------------------------------------------------------------------------------
 
+pragma Ada_2012;
+
 with Gnatvsn;
 
-with Formatted_Output;
+with ASIS_UL.Formatted_Output;
 
 package body Gnat2xml_Versioning is
 
@@ -39,8 +41,12 @@ package body Gnat2xml_Versioning is
    -- Print_Version_Info --
    ------------------------
 
-   procedure Print_Version_Info (Tool_Name : String; First_Release_Year : String) is
-      use Formatted_Output;
+   procedure Print_Version_Info
+     (Tool_Name          : String;
+      First_Release_Year : String)
+   is
+      use ASIS_UL.Formatted_Output;
+
    begin
       Put ("\1 ", Tool_Name);
 
@@ -49,19 +55,22 @@ package body Gnat2xml_Versioning is
 
       if Tool_Name = "gnat2xsd" then
          null;
+
       elsif Tool_Name = "gnat2xml" then
          Put ("\1\n", Gnatvsn.Gnat_Version_String);
+
       else
          raise Program_Error;
       end if;
 
       --  "\1\2" below is something like "2012" or "2012-2013"
 
-      Put ("Copyright (C) \1\2, AdaCore, Inc.\n",
-           (if First_Release_Year = Gnatvsn.Current_Year
-              then ""
-              else First_Release_Year & "-"),
-           Gnatvsn.Current_Year);
+      Put
+        ("Copyright (C) \1\2, AdaCore, Inc.\n",
+         (if First_Release_Year = Gnatvsn.Current_Year then
+            ""
+         else
+            First_Release_Year & "-"), Gnatvsn.Current_Year);
    end Print_Version_Info;
 
 end Gnat2xml_Versioning;
