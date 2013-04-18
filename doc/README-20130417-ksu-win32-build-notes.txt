@@ -33,6 +33,9 @@ cd /c/asis-7.2.0w-src/tools/gnat2xml
 
 make all test
 
+************************
+This section seems to be not required for last version...
+
 cd /c/MinGW/msys/1.0/home/sireum/libxml2-2.8.0
 
 ./configure --without-threads --prefix=/c/opt
@@ -46,6 +49,8 @@ export PATH=/c/opt/bin:$PATH
 cd /c/asis-7.2.0w-src/tools/gnat2xml/
 
 make all test
+
+************************
 
 cp gnat2xml.exe $GNAT_HOME/bin
 
