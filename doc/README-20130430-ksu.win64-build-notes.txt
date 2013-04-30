@@ -15,33 +15,33 @@ Preparation
     - Windows: gnatpro-7.2.0w-20130331-47-i686-pc-mingw32-bin
 
 2. Download the customized Gnat2XML from KSU SAnToS's 
-   `open source project <https://www.assembla.com/code/sireum-bakar/git-2/nodes>`_
+   `open source project https://www.assembla.com/code/sireum-bakar/git-2/nodes>
 
-Windows 64
-**************
+Build Gnat2XML On Windows 64
+****************************
   
 1. run ``gnatpro-7.2.0w-20130331-47-i686-pc-mingw32-bin`` and
-   install GNAT PRO at some location, for example: C:\\GNATPRO\\7.2.0w-20130331. 
+   install GNAT PRO at some location, for example: C:\GNATPRO\7.2.0w-20130331. 
   
-2. download and install ``mingw-get-inst-20120426.exe`` (for example, in C:\\MinGW) 
-   via ``http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/``
+2. download and install ``mingw-get-inst-20120426.exe`` (for example, in C:\MinGW) 
+   via http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/
    
-   Install MinGW shell trough cmd (mingw-get.exe is in C:\\MinGW\\bin): 
+   Install MinGW shell trough cmd (mingw-get.exe is in C:\MinGW\bin): 
    
-   * > cd C:\\MinGW\\bin
+   * > cd C:\MinGW\bin
    * > mingw-get install msys-dvlpr 
    
-3. install ASIS (if ASIS_DIR is asis-7.2.0w-src directory)\
+3. install ASIS (if ASIS_DIR is asis-7.2.0w-src directory)
 
    * > cd ASIS_DIR
-   * > use KSU customized Gnat2XML to replace the one in ASIS_DIR\\tools\\gnat2xml
+   * > use KSU customized Gnat2XML to replace the one in ASIS_DIR\tools\gnat2xml
    * > set GNAT_HOME=C:/GNATPRO/7.2.0w-20130331
    * > gnatmake -j0 -Pasis 
    * > gprinstall -p --prefix=%GNAT_HOME% asis.gpr  (Note: it's double dash before option ``prefix``)
 
 4. install gnat2xml
 
-  * download libxml and its dependencies from ``ftp://ftp.zlatkovic.com/libxml/``, 
+  * download libxml and its dependencies from ftp://ftp.zlatkovic.com/libxml/, 
     and unzip them under a directory, let's call it ``LIBXML_DIR``
     
     - iconv-1.9.2.win32.zip
@@ -49,7 +49,7 @@ Windows 64
     - zlib-1.2.5.win32.zip
     
     
-  * run MinGW shell (by C:\\MinGW\\msys\\1.0\\msys.bat), and then type the following commands:
+  * run MinGW shell (by C:\MinGW\msys\1.0\msys.bat), and then type the following commands:
   * $ cd ASIS_DIR/tools/gnat2xml
   * $ export PATH=/c/GNATPRO/7.2.0w-20130331/bin:/c/MinGW/bin:/c/MinGW/msys/1.0/bin:
     LIBXML_DIR/libxml2-2.7.8/bin:LIBXML_DIR/iconv-1.9.2.win32/bin:LIBXML_DIR/zlib-1.2.5/bin:$PATH
