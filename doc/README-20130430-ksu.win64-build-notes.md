@@ -15,7 +15,7 @@ Preparation
     - Windows: gnatpro-7.2.0w-20130331-47-i686-pc-mingw32-bin
 
 2. Download the customized Gnat2XML from KSU SAnToS's 
-   `open source project https://www.assembla.com/code/sireum-bakar/git-2/nodes>
+   `open source project https://www.assembla.com/code/sireum-bakar/git-2/nodes
 
 Build Gnat2XML On Windows 64
 ****************************
